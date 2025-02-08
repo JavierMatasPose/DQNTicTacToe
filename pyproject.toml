@@ -2,7 +2,7 @@
 name = "DQNTicTacToe"
 version = "0.1.0"
 description = ""
-authors = ["javiermatasjr@gmail.com"]
+authors = ["Javier Matas <javiermatasjr@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.11"

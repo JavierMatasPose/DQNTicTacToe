@@ -3,6 +3,7 @@ import numpy as np
 import torch
 from environment.tictactoe import TicTacToeEnv
 from agents.ddqnagent import DDQNAgent
+import os
 
 app = Flask(__name__)
 
@@ -14,7 +15,8 @@ agent = DDQNAgent(
 )
 # Load pre-trained DQN model
 agent.model.load_state_dict(
-    torch.load("models/DQN_TICTACTOE_0.pth", map_location=torch.device("cpu")))
+    torch.load("models/DQN_TICTACTOE_0.pth", map_location=torch.device("cpu"))
+)
 
 # Reset game state
 env.reset()
@@ -62,11 +64,13 @@ def move():
     if done:
         game_over = True
         result = "Game over! (Human move ended the game)"
-        return jsonify({
-            "board": board_to_symbols(current_board),
-            "game_over": game_over,
-            "result": result,
-        })
+        return jsonify(
+            {
+                "board": board_to_symbols(current_board),
+                "game_over": game_over,
+                "result": result,
+            }
+        )
 
     # Process the DQN agent’s move
     state_np = current_board.flatten()
@@ -80,11 +84,13 @@ def move():
     else:
         result = ""
 
-    return jsonify({
-        "board": board_to_symbols(current_board),
-        "game_over": game_over,
-        "result": result,
-    })
+    return jsonify(
+        {
+            "board": board_to_symbols(current_board),
+            "game_over": game_over,
+            "result": result,
+        }
+    )
 
 
 @app.route("/reset", methods=["POST"])
@@ -94,11 +100,10 @@ def reset():
     env.reset()
     current_board = env.get_obs()
     game_over = False
-    return jsonify({
-        "board": board_to_symbols(current_board),
-        "game_over": game_over
-    })
+    return jsonify({"board": board_to_symbols(current_board), "game_over": game_over})
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Use the port provided by the environment, default to 5000 if not available.
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
